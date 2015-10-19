@@ -1,5 +1,5 @@
-module Commitchamp
-  class Contributions
+module Commitment
+  class Github
     
     include HTTParty
     base_uri "https://api.github.com"
