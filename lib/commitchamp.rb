@@ -5,45 +5,56 @@ require "commitchamp/commitment.rb"
 
 module Commitchamp
   class App
-  	include Commitment
-    def initialize 
+    include Commitment
+    def initialize
     end
 
     def mainfunction
-    	auth_token = get_auth_token
-        repo_name = get_repo
-        owner_repo =  repo_name.split('/')
-        result = gets_repo_contributions(auth_token, owner_repo[0], owner_repo[1])
+      auth_token = get_auth_token
+      repo_name = get_repo
+      owner_repo =  repo_name.split('/')
+      result = gets_repo_contributions(auth_token, owner_repo[0], owner_repo[1])
+      result.each do |x|
+        contributor = x["author"]["login"]
+        additions= 0
+        deletions = 0
+        x["weeks"].each do |week|
+          additions = week["a"] + additions
+          deletions = week["d"] + deletions
+          commits = week["c"] + commits
+        end
 
-        puts result[0]["weeks"][0]["a"]
+        #print contributor, total, additions, deletions
+      end
       #put some way to (F)etch repo, (Q)uit, or (S)ort data
-    end
+    end	
 
     def get_auth_token
-    	#prompt user for auth token.
-    	puts "you need to put in your key"
-    	gets.chomp
-    end	
+      #prompt user for auth token.
+      puts "you need to put in your key"
+      gets.chomp
+    end
 
     def get_repo
-    	#prompt for repo
-    	puts "Which repo would you like to look at?"
-        gets.chomp
-    end	
+      #prompt for repo
+      puts "Which repo would you like to look at?"
+      gets.chomp
+    end
 
     def gets_repo_contributions(auth_token, owner, repo)
-    	#fetches users contributions 
-    	data = Commitment::Github.new(auth_token)
-    	data.get_contributions_stats(owner, repo)
-    end	
+      #fetches users contributions
+      data = Commitment::Github.new(auth_token)
+      data.get_contributions_stats(owner, repo)
+    end
 
     def sorts_repo_contributions
-        #additions,deltions,changes are sorted?
-    end	
+      #additions,deltions,changes are sorted?
+    end
     def print_repo_contributions
-    	#prints contributions 
-    end	
- end
+      printf("%20s  %12s %12s %12s\n", "Contributor", "Additions", "Deletions", "Commits")
+      puts "888888888888888888888888888888888888888888888888888888"
+    end
+  end
 end
 
 app = Commitchamp::App.new
@@ -66,4 +77,3 @@ app.mainfunction
 # User 2             6940           913        1603
 # ...
 # Finally, ask the user if they'd like to sort the data differently, fetch another repo, or quit.
-
