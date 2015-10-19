@@ -1,16 +1,21 @@
 require "httparty"
 require "pry"
 
-require "commitment/GitHub"
+require "commitchamp/commitment.rb"
 
 module Commitchamp
   class App
+  	include Commitment
     def initialize 
     end
 
     def mainfunction
     	auth_token = get_auth_token
         repo_name = get_repo
+        owner_repo =  repo_name.split('/')
+        result = gets_repo_contributions(auth_token, owner_repo[0], owner_repo[1])
+
+        puts result[0]["weeks"][0]["a"]
       #put some way to (F)etch repo, (Q)uit, or (S)ort data
     end
 
@@ -26,8 +31,10 @@ module Commitchamp
         gets.chomp
     end	
 
-    def gets_repo_contributions
-    	#fetches users contributions and gathers their stats?
+    def gets_repo_contributions(auth_token, owner, repo)
+    	#fetches users contributions 
+    	data = Commitment::Github.new(auth_token)
+    	data.get_contributions_stats(owner, repo)
     end	
 
     def sorts_repo_contributions
